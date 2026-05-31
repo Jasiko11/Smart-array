@@ -1,7 +1,7 @@
 
 #include <gtest/gtest.h>
 
-#include "../include/SmartArray.h"
+#include "../include/SmartArray/SmartArray.h"
 
 #include <array>
 

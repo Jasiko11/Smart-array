@@ -32,8 +32,11 @@ public:
     void erase(unsigned index, unsigned amount);
     void pushBack(T elem);
     void popBack();
+    void shrinkToFit();
+    void pushFront(T elem);
+    void popFront();
     bool operator==(SmartArray array);
-    SmartArray& operator=(SmartArray& array);
+    SmartArray& operator=(SmartArray const& array);
 };
 
 template<typename T>
@@ -189,6 +192,21 @@ void SmartArray<T>::popBack() {
 }
 
 template<typename T>
+void SmartArray<T>::shrinkToFit() {
+    if (m_capacity > m_size) reallocate(m_size);
+}
+
+template<typename T>
+void SmartArray<T>::pushFront(T elem) {
+    insert(0, elem);
+}
+
+template<typename T>
+void SmartArray<T>::popFront() {
+    if (m_size > 0) erase(0);
+}
+
+template<typename T>
 bool SmartArray<T>::operator==(SmartArray array) {
     if (m_size != array.m_size) return false;
     for (unsigned i = 0; i < m_size; ++i)
@@ -197,7 +215,7 @@ bool SmartArray<T>::operator==(SmartArray array) {
 }
 
 template<typename T>
-SmartArray<T>& SmartArray<T>::operator=(SmartArray &array) {
+SmartArray<T>& SmartArray<T>::operator=(SmartArray const &array) {
     if (this == &array) return *this;
     delete[] m_data;
     m_size = array.m_size;
