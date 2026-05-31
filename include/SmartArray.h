@@ -1,6 +1,3 @@
-//
-// Created by Jan Józwik on 31/05/2026.
-//
 
 #ifndef INTELLIGENT_ARRAY_MYVECTOR_H
 #define INTELLIGENT_ARRAY_MYVECTOR_H
