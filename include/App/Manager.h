@@ -1,92 +1,91 @@
-
-#ifndef INCLUDE_SMARTARRAY_MANAGER_H
-#define INCLUDE_SMARTARRAY_MANAGER_H
-
-#include <fstream>
-#include <iostream>
+#ifndef STUDENT_MANAGER_H
+#define STUDENT_MANAGER_H
 
 #include "Student.h"
+#include <string>
+
 #include "SmartArray/SmartArray.h"
 
 /**
- * @brief Class managing students
+ * @brief Klasa zarządzająca bazą danych studentów przy użyciu kontenera SmartArray.
  */
-class Manager {
-    SmartArray<Student> m_students;
-    /**
-     * @brief Writes string to binary file
-     */
-    static void writeStr(std::ofstream& f, const std::string& s) {
-        auto len = static_cast<unsigned>(s.size());
-        f.write(reinterpret_cast<const char*>(&len), sizeof(len));
-        f.write(s.data(), len);
-    }
+class StudentManager {
+private:
+    SmartArray<Student> students;
 
-    /**
-     * @brief Reads string from binary file
-     */
-    static std::string readStr(std::ifstream& f) {
-        unsigned len = 0;
-        f.read(reinterpret_cast<char*>(&len), sizeof(len));
-        std::string s(len, '\0');
-        f.read(&s[0], len);
-        return s;
-    }
 public:
     /**
-     * @brief Adding a new student
-     * @param student Student to add
+     * @brief Dodaje nowego studenta na koniec tablicy.
+     * @param s Obiekt studenta do dodania.
      */
-    void add(const Student& student) {
-        m_students.pushBack(student);
-    }
+    void addStudent(const Student& s);
 
     /**
-     * @brief Removes student from an index
-     * @param index Index of student to remove
+     * @brief Usuwa studenta ze wskazanego indeksu.
+     * @param index Numer indeksu w tablicy SmartArray.
+     * @return true jeśli usuwanie się powiodło, false w przeciwnym wypadku.
      */
-    void remove(unsigned index) {
-        m_students.erase(index);
-    }
+    bool removeStudent(unsigned index);
 
     /**
-     * @return Returns the number of students
+     * @brief Modyfikuje dane studenta pod konkretnym indeksem.
+     * @param index Pozycja w tablicy.
+     * @param updatedStudent Nowe dane studenta.
+     * @return true jeśli modyfikacja się powiodła.
      */
-    unsigned count() {
-        return m_students.size();
-    }
+    bool editStudent(unsigned index, const Student& updatedStudent);
 
     /**
-     * @brief Prints all students
+     * @brief Zwraca liczbę przechowywanych studentów.
      */
-    void print() {
-        for (unsigned i = 0; i < m_students.size(); ++i) {
-            std::cout << "Imie: " << m_students[i].name
-            << "Nazwisko: " << m_students[i].surname
-            << "Numer indeksu: " << m_students[i].indexNumber
-            << "Rok: " << m_students[i].year
-            << "Srednia: " << m_students[i].gpa << std::endl;
-        }
-    }
+    unsigned getCount() const;
 
     /**
-     * @brief Prints students in a range
-     * @param start Starting index
-     * @param stop Ending index
+     * @brief Pobiera studenta z określonego indeksu.
+     * @param index Pozycja w tablicy.
+     * @return Obiekt klasy Student.
      */
-    void print(unsigned start, unsigned stop) {
-        if (stop > m_students.size()) {
-            throw std::out_of_range("Wrong range");
-        }
-        for (unsigned i = start; i < m_students.size(); ++i) {
-            std::cout << "Imie: " << m_students[i].name
-            << "Nazwisko: " << m_students[i].surname
-            << "Numer indeksu: " << m_students[i].indexNumber
-            << "Rok: " << m_students[i].year
-            << "Srednia: " << m_students[i].gpa << std::endl;
-        }
-    }
+    Student getStudent(unsigned index);
 
+    /**
+     * @brief Wyszukuje studentów po nazwisku.
+     * @param surname Poszukiwane nazwisko (lub fragment).
+     * @return Nowa instancja SmartArray z wynikami.
+     */
+    SmartArray<Student> searchBySurname(const std::string& surname);
+
+    /**
+     * @brief Wyszukuje studentów spełniających kryterium roku i minimalnej średniej.
+     * @param year Rok studiów.
+     * @param minGpa Minimalna średnia ocen.
+     * @return SmartArray z dopasowanymi studentami.
+     */
+    SmartArray<Student> searchByYearAndGpa(int year, double minGpa);
+
+    /**
+     * @brief Oblicza średnią ocen (GPA) wszystkich studentów w bazie.
+     */
+    double calculateAverageGpa();
+
+    /**
+     * @brief Zaawansowana agregacja: Oblicza średnią ocen studentów tylko z wybranego roku studiów.
+     * @param year Kryterium roku studiów.
+     */
+    double calculateAverageGpaForYear(int year);
+
+    /**
+     * @brief Zapisuje kolekcję studentów do pliku binarnego.
+     * @param filename Ścieżka do pliku.
+     * @return true jeśli zapis przebiegł pomyślnie.
+     */
+    bool saveToBinaryFile(const std::string& filename);
+
+    /**
+     * @brief Wczytuje kolekcję studentów z pliku binarnego.
+     * @param filename Ścieżka do pliku.
+     * @return true jeśli odczyt przebiegł pomyślnie.
+     */
+    bool loadFromBinaryFile(const std::string& filename);
 };
 
-#endif //INCLUDE_SMARTARRAY_MANAGER_H
+#endif

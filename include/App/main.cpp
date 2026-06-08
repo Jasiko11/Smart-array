@@ -1,5 +1,7 @@
-#include "SmartArray/SmartArray.h"
+#include <iostream>
+#include "TuiInterface.h"
 
-int main() {
-    
+int main(){
+    TuiInterface interface;
+    interface.render();
 }

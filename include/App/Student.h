@@ -1,10 +1,6 @@
-//
-// Created by Jan Józwik on 31/05/2026.
-//
 
 #ifndef INCLUDE_SMARTARRAY_STUDENT_H
 #define INCLUDE_SMARTARRAY_STUDENT_H
-#include <iosfwd>
 #include <string>
 #include <utility>
 

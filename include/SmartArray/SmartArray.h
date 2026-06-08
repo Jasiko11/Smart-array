@@ -1,6 +1,6 @@
 
-#ifndef INTELLIGENT_ARRAY_MYVECTOR_H
-#define INTELLIGENT_ARRAY_MYVECTOR_H
+#ifndef SMART_ARRAY_MYVECTOR_H
+#define SMART_ARRAY_MYVECTOR_H
 #include <stdexcept>
 
 template <typename T>
@@ -19,9 +19,9 @@ public:
 
     T at(unsigned index);
     T operator[](unsigned index);
-    bool isEmpty();
-    unsigned size();
-    unsigned capacity();
+    bool isEmpty() const;
+    unsigned size() const;
+    unsigned capacity() const;
     void reserve(unsigned size);
     void reallocate(unsigned newCapacity);
     void resize(unsigned size);
@@ -83,17 +83,17 @@ T SmartArray<T>::operator[](unsigned index) {
 }
 
 template<typename T>
-bool SmartArray<T>::isEmpty() {
+bool SmartArray<T>::isEmpty() const {
     return m_size == 0;
 }
 
 template<typename T>
-unsigned SmartArray<T>::size() {
+unsigned SmartArray<T>::size() const {
     return m_size;
 }
 
 template<typename T>
-unsigned SmartArray<T>::capacity() {
+unsigned SmartArray<T>::capacity() const {
     return m_capacity;
 }
 
@@ -106,20 +106,19 @@ void SmartArray<T>::reserve(unsigned size) {
 template<typename T>
 void SmartArray<T>::reallocate(unsigned newCapacity) {
     T* newData = (newCapacity > 0) ? new T[newCapacity] : nullptr;
-    unsigned copyCount = (m_size < newCapacity) ? m_size : newCapacity;
+    unsigned copyCount = (m_size > newCapacity) ? newCapacity : m_size;
     for (unsigned i = 0; i < copyCount; ++i)
         newData[i] = m_data[i];
     delete[] m_data;
     m_data = newData;
     m_capacity = newCapacity;
-    m_size = (m_size > m_capacity) ? m_capacity : m_size;
+    m_size = (m_size > newCapacity) ? newCapacity : m_size;
 }
 
 template<typename T>
 void SmartArray<T>::resize(unsigned size) {
     if (size > m_capacity) {
-        unsigned newCapacity = m_capacity * 2;
-        if (newCapacity < size) newCapacity = size;
+        unsigned newCapacity = size;
         reallocate(newCapacity);
     }
     for (unsigned i = m_size; i < size; ++i)
@@ -130,8 +129,7 @@ void SmartArray<T>::resize(unsigned size) {
 template<typename T>
 void SmartArray<T>::resize(unsigned size, T elem) {
     if (size > m_capacity) {
-        unsigned newCapacity = m_capacity * 2;
-        if (newCapacity < size) newCapacity = size;
+        unsigned newCapacity = size;
         reallocate(newCapacity);
     }
     for (unsigned i = m_size; i < size; ++i)
@@ -149,8 +147,8 @@ void SmartArray<T>::insert(unsigned index, T elem) {
     if (index > m_size)
         throw std::out_of_range("index out of range");
     if (m_size == m_capacity) {
-        unsigned newCap = (m_capacity == 0) ? 1 : m_capacity * 2;
-        reallocate(newCap);
+        unsigned newCapacity = (m_capacity == 0) ? 1 : m_capacity * 2;
+        reallocate(newCapacity);
     }
     for (unsigned i = m_size; i > index; --i)
         m_data[i] = m_data[i - 1];
@@ -182,7 +180,8 @@ void SmartArray<T>::pushBack(T elem) {
         unsigned newCapacity = (m_capacity == 0) ? 1 : m_capacity * 2;
         reallocate(newCapacity);
     }
-    m_data[m_size++] = elem;
+    m_data[m_size] = elem;
+    m_size++;
 }
 
 template<typename T>
@@ -227,4 +226,4 @@ SmartArray<T>& SmartArray<T>::operator=(SmartArray const &array) {
 }
 
 
-#endif //INTELLIGENT_ARRAY_MYVECTOR_H
+#endif
