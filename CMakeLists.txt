@@ -1,34 +1,44 @@
-cmake_minimum_required(VERSION 3.15)
-project(SmartArrayStudentManager CXX)
+cmake_minimum_required(VERSION 3.20)
+project(SmartArrayApp)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if(MSVC)
-    add_compile_options(/W4)
-else()
-    add_compile_options(-Wall -Wextra -Wpedantic)
-endif()
-
 include(FetchContent)
+set(FETCHCONTENT_UPDATES_DISCONNECTED TRUE)
 FetchContent_Declare(ftxui
-        GIT_REPOSITORY https://github.com/ArthurSonzogni/FTXUI
-        GIT_TAG main
+        GIT_REPOSITORY https://github.com/ArthurSonzogni/ftxui
+        GIT_TAG main # Important: Specify a version or a commit hash here.
 )
 FetchContent_MakeAvailable(ftxui)
 
-set(SOURCES
-        include/App/main.cpp
-        include/App/Manager.cpp
-        include/App/TuiInterface.cpp
-        include/App/TuiInterface.h
-)
+add_library(SmartArray
+        src/smartArray/SmartArray.h
+        src/app/main.cpp
+        src/app/main.cpp
+        src/app/main.cpp)
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+target_link_libraries(SmartArray
+        ftxui::screen
+        ftxui::component
+        ftxui::dom
+        ftxui::component)
+# Dodaj plik nagłówkowy jeśli potrzebujesz, ale nie jest wymagane w CMakeLists.txt
 
-target_include_directories(${PROJECT_NAME} PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/App
-)
+add_executable(SmartArrayApp
+        src/app/main.cpp
+        src/app/Manager.cpp
+        src/app/TuiInterface.cpp
+        src/app/main.cpp)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE ftxui::screen ftxui::dom ftxui::component)
+# Podłącz bibliotekę FTXUI (komponent i dom są wymagane dla GUI)
+target_link_libraries(SmartArrayApp
+        ftxui::screen
+        ftxui::component
+        ftxui::dom
+        ftxui::component)
+target_include_directories(SmartArrayApp PRIVATE include model
+        src/app
+        src/smartArray)
+
+add_subdirectory(tests)
