@@ -2,6 +2,7 @@
 #include <ftxui/component/component.hpp>
 #include <ftxui/component/component_options.hpp>
 #include <ftxui/dom/elements.hpp>
+#include <utility>
 
 using namespace ftxui;
 
@@ -49,7 +50,7 @@ void TuiInterface::render() {
     auto rend = Renderer(menu, [&] {
         return window(text(" Baza Studentow "),
             vbox({
-                text("Wybierz akcje:") | bold,
+                text("Wybierz akcje:"),
                 separator(),
                 menu->Render()
             })
@@ -66,19 +67,19 @@ void TuiInterface::render() {
         if (selected == "Lista studentow") {
             renderListStudents();
         }
-        if (selected == "Skrocona lista") {
+        else if (selected == "Skrocona lista") {
             renderShortList();
         }
-        if (selected == "Lista z zakresu") {
+        else if (selected == "Lista z zakresu") {
             renderListByRange();
         }
         else if (selected == "Wyswietl element") {
             renderSingleStudent();
         }
-        if (selected == "Wyszukaj po dowolnym polu") {
+        else if (selected == "Wyszukaj po dowolnym polu") {
             renderSearchByField();
         }
-        if (selected == "Srednia") {
+        else if (selected == "Srednia") {
             renderSrednia();
         }
         else if (selected == "Liczba elementow") {
@@ -376,10 +377,10 @@ void TuiInterface::renderListByRange() {
     auto rend = Renderer(navContainer, [&] {
         int start_idx = safe_stoi(start_str);
         int end_idx = safe_stoi(end_str);
-        int count = manager.getCount();
+        unsigned count = manager.getCount();
 
         int safe_start = start_idx < 0 ? 0 : start_idx;
-        int safe_end = end_idx >= count ? (count > 0 ? count - 1 : 0) : end_idx;
+        unsigned safe_end = end_idx >= count ? (count > 0 ? count - 1 : 0) : end_idx;
 
         Elements list_elements;
 
@@ -439,7 +440,7 @@ void TuiInterface::renderSingleStudent() {
 
             if (count == 0) {
                 details.push_back(text("Baza jest pusta.") | color(Color::Red));
-            } else if (idx < 0 || (unsigned)idx >= count) {
+            } else if (idx < 0 || idx >= count) {
                 details.push_back(text("Indeks poza zakresem! Dostepne indeksy: 0 - " + std::to_string(count - 1)) | color(Color::Red));
             } else {
                 Student s = manager.getStudent(idx);
@@ -530,7 +531,7 @@ void TuiInterface::renderSearchByField() {
         elems.push_back(separator());
 
         auto make_row = [](const std::string &label, Element input_el) {
-            return hbox({ text(label) | size(WIDTH, EQUAL, 12), input_el | size(WIDTH, EQUAL, 30) });
+            return hbox({ text(label) | size(WIDTH, EQUAL, 12), std::move(input_el) | size(WIDTH, EQUAL, 30) });
         };
 
         elems.push_back(make_row("Imię:", in_name->Render()));
