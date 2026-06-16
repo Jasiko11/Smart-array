@@ -1,6 +1,8 @@
 #include "Manager.h"
 #include <fstream>
 #include <iostream>
+#include <map>
+#include <string>
 
 void StudentManager::addStudent(const Student& s) {
     students.pushBack(s);
@@ -27,7 +29,6 @@ Student StudentManager::getStudent(unsigned index) {
     return students.at(index);
 }
 
-
 double StudentManager::calculateAverageGpa() {
     if (students.isEmpty()) return 0.0;
     double sum = 0.0;
@@ -50,10 +51,6 @@ double StudentManager::calculateAverageGpaForYear(int year) {
     }
     return sum / count;
 }
-
-#include <map>
-#include <string>
-
 
 SmartArray<Student> StudentManager::searchByField(const std::map<std::string, std::string>& criteria) {
     SmartArray<Student> result;
@@ -113,25 +110,25 @@ SmartArray<Student> StudentManager::searchByField(const std::map<std::string, st
 }
 
 bool StudentManager::saveToBinaryFile(const std::string& filename) {
-    std::ofstream ofs(filename, std::ios::binary);
-    if (ofs.good()) {
+    std::ofstream outf(filename, std::ios::binary);
+    if (outf.good()) {
         unsigned count = students.size();
-        ofs.write(reinterpret_cast<const char*>(&count), sizeof(count));
+        outf.write(reinterpret_cast<const char*>(&count), sizeof(count));
 
         for (unsigned i = 0; i < count; ++i) {
             Student s = students.at(i);
 
             size_t nameLen = s.name.size();
-            ofs.write(reinterpret_cast<const char*>(&nameLen), sizeof(nameLen));
-            ofs.write(s.name.data(), nameLen);
+            outf.write(reinterpret_cast<const char*>(&nameLen), sizeof(nameLen));
+            outf.write(s.name.data(), nameLen);
 
             size_t surnameLen = s.surname.size();
-            ofs.write(reinterpret_cast<const char*>(&surnameLen), sizeof(surnameLen));
-            ofs.write(s.surname.data(), surnameLen);
+            outf.write(reinterpret_cast<const char*>(&surnameLen), sizeof(surnameLen));
+            outf.write(s.surname.data(), surnameLen);
 
-            ofs.write(reinterpret_cast<const char*>(&s.indexNumber), sizeof(s.indexNumber));
-            ofs.write(reinterpret_cast<const char*>(&s.year), sizeof(s.year));
-            ofs.write(reinterpret_cast<const char*>(&s.gpa), sizeof(s.gpa));
+            outf.write(reinterpret_cast<const char*>(&s.indexNumber), sizeof(s.indexNumber));
+            outf.write(reinterpret_cast<const char*>(&s.year), sizeof(s.year));
+            outf.write(reinterpret_cast<const char*>(&s.gpa), sizeof(s.gpa));
         }
         return true;
     }
@@ -139,10 +136,10 @@ bool StudentManager::saveToBinaryFile(const std::string& filename) {
 }
 
 bool StudentManager::loadFromBinaryFile(const std::string& filename) {
-    std::ifstream ifs(filename, std::ios::binary);
-    if (ifs.good()) {
+    std::ifstream inf(filename, std::ios::binary);
+    if (inf.good()) {
         unsigned count = 0;
-        ifs.read(reinterpret_cast<char*>(&count), sizeof(count));
+        inf.read(reinterpret_cast<char*>(&count), sizeof(count));
 
         students.clear();
 
@@ -150,17 +147,17 @@ bool StudentManager::loadFromBinaryFile(const std::string& filename) {
             Student s;
             size_t nameLen = 0, surnameLen = 0;
 
-            ifs.read(reinterpret_cast<char*>(&nameLen), sizeof(nameLen));
+            inf.read(reinterpret_cast<char*>(&nameLen), sizeof(nameLen));
             s.name.resize(nameLen);
-            ifs.read(&s.name[0], nameLen);
+            inf.read(&s.name[0], nameLen);
 
-            ifs.read(reinterpret_cast<char*>(&surnameLen), sizeof(surnameLen));
+            inf.read(reinterpret_cast<char*>(&surnameLen), sizeof(surnameLen));
             s.surname.resize(surnameLen);
-            ifs.read(&s.surname[0], surnameLen);
+            inf.read(&s.surname[0], surnameLen);
 
-            ifs.read(reinterpret_cast<char*>(&s.indexNumber), sizeof(s.indexNumber));
-            ifs.read(reinterpret_cast<char*>(&s.year), sizeof(s.year));
-            ifs.read(reinterpret_cast<char*>(&s.gpa), sizeof(s.gpa));
+            inf.read(reinterpret_cast<char*>(&s.indexNumber), sizeof(s.indexNumber));
+            inf.read(reinterpret_cast<char*>(&s.year), sizeof(s.year));
+            inf.read(reinterpret_cast<char*>(&s.gpa), sizeof(s.gpa));
 
             students.pushBack(s);
         }
