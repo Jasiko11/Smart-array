@@ -12,14 +12,8 @@ FetchContent_Declare(ftxui
 )
 FetchContent_MakeAvailable(ftxui)
 
-add_library(SmartArray
-        src/smartArray/SmartArray.h)
+add_library(SmartArray INTERFACE src/smartArray/SmartArray.h)
 
-target_link_libraries(SmartArray
-        ftxui::screen
-        ftxui::component
-        ftxui::dom
-        ftxui::component)
 # Dodaj plik nagłówkowy jeśli potrzebujesz, ale nie jest wymagane w CMakeLists.txt
 
 add_executable(SmartArrayApp
@@ -28,13 +22,7 @@ add_executable(SmartArrayApp
         src/app/main.cpp)
 
 # Podłącz bibliotekę FTXUI (komponent i dom są wymagane dla GUI)
-target_link_libraries(SmartArrayApp
-        ftxui::screen
-        ftxui::component
-        ftxui::dom
-        ftxui::component)
-target_include_directories(SmartArrayApp PRIVATE include model
-        src/app
-        src/smartArray)
+target_link_libraries(SmartArrayApp ftxui::screen ftxui::component SmartArray)
+target_include_directories(SmartArrayApp PRIVATE include model)
 
 add_subdirectory(tests)
