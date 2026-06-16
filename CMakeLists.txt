@@ -13,10 +13,7 @@ FetchContent_Declare(ftxui
 FetchContent_MakeAvailable(ftxui)
 
 add_library(SmartArray
-        src/smartArray/SmartArray.h
-        src/app/main.cpp
-        src/app/main.cpp
-        src/app/main.cpp)
+        src/smartArray/SmartArray.h)
 
 target_link_libraries(SmartArray
         ftxui::screen
@@ -26,7 +23,6 @@ target_link_libraries(SmartArray
 # Dodaj plik nagłówkowy jeśli potrzebujesz, ale nie jest wymagane w CMakeLists.txt
 
 add_executable(SmartArrayApp
-        src/app/main.cpp
         src/app/Manager.cpp
         src/app/TuiInterface.cpp
         src/app/main.cpp)
